@@ -28,7 +28,7 @@ graph = graph_builder.compile()
 
 from langchain_tavily import TavilySearch
 
-search_tool = TavilySearch(max_results = 2)
+search_tool = TavilySearch()
 
 # Custom tool
 def multiply_tool(a: int, b:int)->int : 
@@ -47,8 +47,10 @@ llm_with_tools = llm.bind_tools(tools)
 
 def tool_calling_llm(state:State) : 
     return {"messages" : llm_with_tools.invoke(state["messages"])}
+
 # Building graph ----------------------------------------------------------
 from langgraph.prebuilt import ToolNode, tools_condition
+
 builder_with_tool = StateGraph(State)
 builder_with_tool.add_node("tool_calling_llm",tool_calling_llm)
 builder_with_tool.add_node("tools",ToolNode(tools))
@@ -63,6 +65,24 @@ builder_with_tool.add_edge("tools",END)
 
 graph_with_tool = builder_with_tool.compile()
 
-response = graph_with_tool.invoke({"messages" : "Give me the recent news that happened in Pimpri Chinchwad"})
+# response = graph_with_tool.invoke({"messages" : "Give me the recent news that happened in Pimpri Chinchwad"})
+# for m in response['messages'] : 
+#     m.pretty_print()
+
+
+
+# ------------ ReAct Style---------------------
+builder_react = StateGraph(State)
+builder_react.add_node("tool_calling_llm",tool_calling_llm)
+builder_react.add_node("tools", ToolNode(tools))
+
+builder_react.add_edge(START,"tool_calling_llm")
+builder_react.add_edge("tools","tool_calling_llm")
+builder_react.add_conditional_edges("tool_calling_llm",tools_condition)
+builder_react.add_edge("tool_calling_llm", END)
+
+graph_react = builder_react.compile()
+
+response = graph_react.invoke({"messages" : "Multiply 2 with 3 and then give me that number of recent news that happened in Pimpri Chinchwad, tell me all the news, and then again multiply 1 with 5 , and give me that number of AI news related to India, and then give me all final results"})
 for m in response['messages'] : 
     m.pretty_print()
