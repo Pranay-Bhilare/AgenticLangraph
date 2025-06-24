@@ -19,9 +19,9 @@ graph_builder.add_edge(START,"LLM_CHAT_BOT")
 graph_builder.add_edge("LLM_CHAT_BOT",END)
 
 graph = graph_builder.compile()
-
-# response =graph.invoke({"messages" : "Hi"})
-# print(response['messages'][-1].content)
+print("---------BASIC CHATBOT USING GRAPH ------------------\n\n\n")
+response =graph.invoke({"messages" : "Hi"})
+print(response['messages'][-1].content)
 
 
 # WITH TOOLS--------------------------------------------------------------------
@@ -64,10 +64,10 @@ builder_with_tool.add_conditional_edges("tool_calling_llm",
 builder_with_tool.add_edge("tools",END)
 
 graph_with_tool = builder_with_tool.compile()
-
-# response = graph_with_tool.invoke({"messages" : "Give me the recent news that happened in Pimpri Chinchwad"})
-# for m in response['messages'] : 
-#     m.pretty_print()
+print("---------BASIC CHATBOT USING GRAPH WITH TOOLS ------------------\n\n\n")
+response = graph_with_tool.invoke({"messages" : "Give me the recent news that happened in Pimpri Chinchwad"})
+for m in response['messages'] : 
+    m.pretty_print()
 
 
 
@@ -81,10 +81,10 @@ builder_react.add_edge("tools","tool_calling_llm")
 builder_react.add_conditional_edges("tool_calling_llm",tools_condition)
 
 graph_react = builder_react.compile()
-
-# response = graph_react.invoke({"messages" : "Multiply 2 with 3 and then give me that number of recent news that happened in Pimpri Chinchwad, tell me all the news, and then again multiply 1 with 5 , and give me that number of AI news related to India, and then give me all final results"})
-# for m in response['messages'] : 
-#     m.pretty_print()
+print("---------BASIC ReAct Style ------------------\n\n\n")
+response = graph_react.invoke({"messages" : "Multiply 2 with 3 and then give me that number of recent news that happened in Pimpri Chinchwad, tell me all the news, and then again multiply 1 with 5 , and give me that number of AI news related to India, and then give me all final results"})
+for m in response['messages'] : 
+    m.pretty_print()
 
 
 
@@ -103,7 +103,7 @@ builder_react_with_memory.add_conditional_edges("tool_calling_llm",tools_conditi
 
 graph_react_with_memory = builder_react_with_memory.compile(checkpointer=memory)
 config = {"configurable" : {"thread_id":"1"}}
-
+print("---------BASIC Memory Based ------------------\n\n\n")
 response = graph_react_with_memory.invoke({"messages" : "Hi, My name is Pranay Bhilare"},config=config)
 print(response['messages'][-1].content)
 response = graph_react_with_memory.invoke({"messages" : "Tell me the latest news of what happened in Pune, I need to know 3 news"}, config=config)
