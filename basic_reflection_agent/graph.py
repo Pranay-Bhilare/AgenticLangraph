@@ -16,12 +16,22 @@ graph_builder = StateGraph(State)
 def generation_node(state: State):
     chain = chain_class.generation_chain()
     response = chain.invoke({"messages": state["messages"]})
-    return {"messages": [AIMessage(content=response.content)]}
+    content = response.content.strip()
+    if content:
+        return {"messages": [AIMessage(content=content)]}
+    else:
+        print("DEBUG: generation_node got empty response, skipping message.")
+        return {"messages": []}
 
 def critique_node(state: State):
     chain = chain_class.critique_chain()
     response = chain.invoke({"messages": state["messages"]})
-    return {"messages": [HumanMessage(content=response.content)]}
+    content = getattr(response, 'content', response).strip()
+    if content:
+        return {"messages": [HumanMessage(content=content)]}
+    else:
+        print("DEBUG: critique_node got empty response, skipping message.")
+        return {"messages": []}
     
 
 graph_builder.add_node("generation_node", generation_node)
