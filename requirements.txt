@@ -8,3 +8,4 @@ pydantic
 langchain_groq
 langchain_community
 langchain_tavily
+langgraph-checkpoint-sqlite
