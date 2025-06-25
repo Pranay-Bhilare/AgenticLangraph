@@ -6,3 +6,5 @@ langchain_google_genai
 langchain_tavily
 pydantic
 langchain_groq
+langchain_community
+langchain_tavily
